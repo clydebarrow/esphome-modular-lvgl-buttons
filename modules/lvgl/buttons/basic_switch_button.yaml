@@ -10,7 +10,7 @@
                   id: lv_button_${id}_icon
                   text: $button_${id}_icon
               - label:
-                  align: bottom_left
+                  align: bottom_mid
                   id: lv_button_${id}_label
                   text: $button_${id}_name
             on_click:

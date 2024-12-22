@@ -1,0 +1,23 @@
+            height: ${height}
+            id: lv_time_${id}
+            width: ${button_width}
+            bg_opa: TRANSP
+            text_font: $time_font
+            text_color: $time_color
+            layout:
+              type: flex
+              flex_flow: COLUMN
+              flex_align_main: CENTER
+              flex_align_cross: CENTER
+              flex_align_track: CENTER
+              pad_row: 6
+              
+            widgets:
+              - label:
+                  align: center
+                  id: lv_time_hours
+                  text: "00"
+              - label:
+                  align: center
+                  id: lv_time_minutes
+                  text: "00"

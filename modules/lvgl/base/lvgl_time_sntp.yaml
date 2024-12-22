@@ -1,18 +1,4 @@
 ---
-sun:
-  latitude: !secret latitude
-  longitude: !secret longitude
-  on_sunset:
-    - elevation: -3.5°
-      then:
-      - light.turn_on:
-          id: display_backlight
-          brightness: $touchscreen_nighttime_brightness
-  on_sunrise:
-    then:
-    - light.turn_on:
-        id: display_backlight
-        brightness: $touchscreen_daytime_brightness
 time:
   - platform: sntp
     id: system_time

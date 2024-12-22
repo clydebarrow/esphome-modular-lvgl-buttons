@@ -10,8 +10,11 @@ substitutions:
   led_strip:         "\U000F07D6"
   coach_lamp:        "\U000F1020"
   ceiling_fan_light: "\U000F1798"
+  light_recessed:    "\U000F179B"
 
   icon_font: light40
+  time_font: dseg_60
+  date_font: roboto48
   text_font: roboto24
   screen_height: '480px'
   screen_width: '480px'
@@ -24,12 +27,15 @@ substitutions:
   label_on_color: "white"
   label_off_color: "gray"
   button_text_color: "white"
+  time_color: "powderblue"
   button_height_single: '109px'
   button_height_double: '228px'
   button_width: '150px'
   touchscreen_idle_timeout: "120s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
+  # Boot screen configuration
+  boot_screen_delay: 5s
 
   # Screen goes to sleep at Mightnight
   screen_sleep_hour: '0'
@@ -40,27 +46,26 @@ substitutions:
   screen_wake_minute: '30'
 
   # Button 1 is a local relay
-  button_1_name: "Button 1"
-  button_1_id: button_one
-  button_1_icon: $lightbulb
-  button_1_device: "switch.athom_smart_plug_v3_50ebc0_switch"
+  button_1_name: "Kitchen"
+  button_1_id: kitchen_light
+  button_1_icon: $track_light
+  button_1_device: "internal.relay_1"
 
-  # Button 2 is a switch (some devcies show up as switches some as lights make sure you use the corresponding file)
-  button_2_name: "Button 2"
-  button_2_id: couch_lamp
-  button_2_icon: $lightbulb
-  button_2_device: "switch.athom_smart_plug_v3_50ebc0_switch"
+  # Button 2 is a local relay
+  button_2_name: "Dining"
+  button_2_id: dining_light
+  button_2_icon: $light_recessed
+  button_2_device: "internal.relay_2"
 
-  # Button 3 is an empty object that requires no settings. It just pushes everything down one button
 
-  # Button 4 is dimmable light
-  button_4_name: "RGB light"
-  button_4_id: rgb_light
-  button_4_icon: $string_lights
-  button_4_device: light.athom_rgb_light_d93662_rgb_light_strip
+  # Button 3 is a local relay
+  button_3_name: "Outside"
+  button_3_id: outside_light
+  button_3_icon: $bulkhead_light
+  button_3_device: "internal.relay_3"
 
 esphome:
-  name: "sdl-lvgl"
+  name: "host-lvgl"
   friendly_name: "SDL test system"
   comment: "SDL test 480px * 480px Smart Screen"  
     
@@ -77,6 +82,7 @@ packages:
   # Harware description file
   hardware: !include modules/hardware/SDL-lvgl.yaml
   
+  lvgl_time_update: !include modules/lvgl/base/lvgl_datetime2_update.yaml
   # Base settings for LVGL libary
   lvgl_time: !include modules/lvgl/base/lvgl_time_homeassistant.yaml
   lvgl_sensors: !include modules/lvgl/base/lvgl_sensors_base-SDL.yaml
@@ -85,7 +91,7 @@ packages:
   # Update button and relay state from Home Assistant
   button_1_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 1 } }   
   button_2_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 2 } } 
-  button_4_sensor: !include { file: modules/sensors/dimmer_light_state.yaml, vars: { id: 4 } }  
+  button_3_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 3 } } 
 
 # -------------------------------------------------------------------------
 # LVGL pages and buttons
@@ -102,13 +108,16 @@ lvgl:
     - id: main_page
       layout:
         type: flex
-        flex_flow: COLUMN_WRAP
+        flex_flow: ROW_WRAP
       width: 100%
       bg_color: black
       bg_opa: cover
       pad_all: 5
       widgets: # Include all the buttons
-        - button: !include { file: modules/lvgl/buttons/basic_switch_button.yaml, vars: { id: 1, height: $button_height_single } }
-        - button: !include { file: modules/lvgl/buttons/basic_switch_button.yaml, vars: { id: 2, height: $button_height_single } }
-        - button: !include { file: modules/lvgl/buttons/transparent_empty_button.yaml, vars: { id: 3, height: $button_height_single } }
-        - button: !include { file: modules/lvgl/buttons/dimmer_light_button.yaml, vars: { id: 4, height: $button_height_double } }
+        - button: !include { file: modules/lvgl/buttons/basic_switch_button.yaml, vars: { id: 1, height: $button_height_double } }
+        - button: !include { file: modules/lvgl/buttons/basic_switch_button.yaml, vars: { id: 2, height: $button_height_double } }
+        - button: !include { file: modules/lvgl/buttons/basic_switch_button.yaml, vars: { id: 3, height: $button_height_double } }
+        - obj: !include { file: modules/lvgl/datetime/date.yaml, vars: { id: 1, height: $button_height_double } }
+        - obj: !include { file: modules/lvgl/datetime/time.yaml, vars: { id: 1, height: $button_height_double } }
+        - obj: !include { file: modules/lvgl/weather/weather.yaml, vars: { id: 1, height: $button_height_double } }
+

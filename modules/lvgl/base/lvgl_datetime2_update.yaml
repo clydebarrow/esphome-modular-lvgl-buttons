@@ -1,0 +1,20 @@
+---
+script:
+  - id: time_update
+    then:
+      - lvgl.label.update:
+          id: lv_time_minutes
+          text: 
+            time_format: "%M"
+      - lvgl.label.update:
+          id: lv_time_hours
+          text: 
+            time_format: "%H"
+      - lvgl.label.update:
+          id: lv_time_day_name
+          text: 
+            time_format: "%a"
+      - lvgl.label.update:
+          id: lv_time_day_of_month
+          text: 
+            time_format: "%e"

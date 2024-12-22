@@ -6,6 +6,9 @@ text_sensor:
     entity_id: $button_${id}_device
     on_value:
       then:
+        - logger.log:
+            format: "New state is %s"
+            args: [x.c_str()]
         - lvgl.widget.update:
             id: lv_button_${id}
             state:

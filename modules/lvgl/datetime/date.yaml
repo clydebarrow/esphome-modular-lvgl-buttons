@@ -1,0 +1,23 @@
+            height: ${height}
+            width: ${button_width}
+            id: lv_date_${id}
+            bg_opa: TRANSP
+            text_font: $date_font
+            text_color: $button_text_color
+            layout:
+              type: flex
+              flex_flow: COLUMN
+              flex_align_main: CENTER
+              flex_align_cross: CENTER
+              flex_align_track: CENTER
+              pad_row: 6
+              
+            widgets:
+              - label:
+                  align: center
+                  id: lv_time_day_name
+                  text: "---"
+              - label:
+                  align: center
+                  id: lv_time_day_of_month
+                  text: "--"

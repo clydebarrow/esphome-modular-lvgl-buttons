@@ -1,0 +1,14 @@
+---
+script:
+  - id: time_update
+    then:
+      - lvgl.label.update:
+          id: lv_time_minutes
+          text: 
+            format: "%02d"
+            args: [id(system_time).now().minute]
+      - lvgl.label.update:
+          id: lv_time_hours
+          text: 
+            format: "%02d"
+            args: [id(system_time).now().hour]

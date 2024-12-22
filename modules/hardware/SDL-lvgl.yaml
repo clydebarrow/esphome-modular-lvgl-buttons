@@ -53,3 +53,15 @@ output:
     write_action:
       - lambda: |-
           ESP_LOGD("fake_light", "Fake brightness level: %.2f", state);         
+
+sensor:
+  - platform: homeassistant
+    id: outside_temp
+    entity_id: sensor.st_00141258_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: out_temp_value
+            text:
+              format: "%.1f"
+              args: [x]

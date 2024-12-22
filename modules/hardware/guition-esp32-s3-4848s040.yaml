@@ -28,6 +28,53 @@ psram:
   mode: octal
   speed: 80MHz
   
+logger:
+  hardware_uart: UART0
+
+api:
+  reboot_timeout: 0s
+
+sensor:
+  - platform: veml7700
+    update_interval: 2s
+    auto_mode: false
+    gain: 2x
+    integration_time: 800ms
+    # short variant of sensor definition:
+    ambient_light:
+      id: ambient_light
+      name: "Ambient light"
+      filters:
+        - multiply: .1
+        - clamp:
+            min_value: 0.05
+            max_value: 1.0
+      on_value:
+        then:
+          - light.turn_on:
+              id: display_backlight
+              brightness: !lambda return x;
+  - platform: homeassistant
+    id: outside_temp
+    entity_id: sensor.st_00141258_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: out_temp_value
+            text:
+              format: "%.1f"
+              args: [x]
+
+
+light:
+  - platform: monochromatic
+    output: GPIO38
+    id: display_backlight
+    restore_mode: ALWAYS_ON
+    default_transition_length: 4s
+    gamma_correct: 1.8
+
+
 #-------------------------------------------
 # Internal outputs
 #-------------------------------------------
@@ -36,7 +83,8 @@ output:
   - platform: ledc
     pin: GPIO38
     id: GPIO38
-    frequency: 100Hz
+    min_power: 10%
+    frequency: 200Hz
     
     # Built in 240v relay
   - id: internal_relay_1
@@ -51,13 +99,6 @@ output:
     platform: gpio
     pin: 1
 
-light:
-  - platform: monochromatic
-    output: GPIO38
-    name: Display Backlight
-    id: display_backlight
-    restore_mode: ALWAYS_ON
-
 #-------------------------------------------
 # Touchscreen gt911 i2c
 #-------------------------------------------
@@ -69,22 +110,11 @@ i2c:
 touchscreen:
   platform: gt911
   transform:
-    mirror_x: false
-    mirror_y: false
+    mirror_x: true
+    mirror_y: true
   id: my_touchscreen
   display: my_display
 
-  on_touch:
-    - logger.log:
-          format: Touch at (%d, %d)
-          args: [touch.x, touch.y]
-    - lambda: |-
-          ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
-              touch.x,
-              touch.y,
-              touch.x_raw,
-              touch.y_raw
-              );
 
 #-------------------------------------------
 # Display st7701s spi
@@ -106,6 +136,9 @@ display:
     dimensions:
       width: 480
       height: 480
+    transform:
+      mirror_x: true
+      mirror_y: true
     cs_pin: 39
     de_pin: 18
     hsync_pin: 16
