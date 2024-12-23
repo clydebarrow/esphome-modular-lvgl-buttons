@@ -44,17 +44,16 @@ substitutions:
   screen_wake_minute: '0'
 
   # Button 1 is a local relay
-  button_1_name: "Kitchen"
-  button_1_id: kitchen_light
-  button_1_icon: $track_light
-  button_1_device: "internal_relay_1"
+  button_1_name: "Dining"
+  button_1_id: dining_light
+  button_1_icon: $light_recessed
+  button_1_device: "internal_relay_2"
 
   # Button 2 is a local relay
-  button_2_name: "Dining"
-  button_2_id: dining_light
-  button_2_icon: $light_recessed
-  button_2_device: "internal_relay_2"
-
+  button_2_name: "Kitchen"
+  button_2_id: kitchen_light
+  button_2_icon: $track_light
+  button_2_device: "internal_relay_1"
 
   # Button 3 is a local relay
   button_3_name: "Outside"
@@ -80,7 +79,7 @@ packages:
   hardware: !include modules/hardware/guition-esp32-s3-4848s040.yaml
   
   # Base settings for LVGL libary
-  lvgl_time: !include modules/lvgl/base/lvgl_time_sntp.yaml
+  lvgl_time: !include modules/lvgl/base/lvgl_time_homeassistant.yaml
   lvgl_sensors: !include modules/lvgl/base/lvgl_sensors_base.yaml
   lvgl_base: !include modules/lvgl/base/lvgl_base.yaml
 

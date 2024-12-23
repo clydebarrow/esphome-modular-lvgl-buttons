@@ -33,10 +33,13 @@ logger:
 
 api:
   reboot_timeout: 0s
+  on_client_connected:
+    - lvgl.widget.hide: boot_screen
+    
 
 sensor:
   - platform: veml7700
-    update_interval: 2s
+    update_interval: 10s
     auto_mode: false
     gain: 2x
     integration_time: 800ms
@@ -44,6 +47,7 @@ sensor:
     ambient_light:
       id: ambient_light
       name: "Ambient light"
+      unit_of_measurement: none
       filters:
         - multiply: .1
         - clamp:
@@ -65,7 +69,6 @@ sensor:
               format: "%.1f"
               args: [x]
 
-
 light:
   - platform: monochromatic
     output: GPIO38
@@ -73,7 +76,6 @@ light:
     restore_mode: ALWAYS_ON
     default_transition_length: 4s
     gamma_correct: 1.8
-
 
 #-------------------------------------------
 # Internal outputs
