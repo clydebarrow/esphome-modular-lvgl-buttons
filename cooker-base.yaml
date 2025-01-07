@@ -1,0 +1,184 @@
+# Substitution variables used through the codebase
+substitutions:
+  wall_sconce_round: "\U000F0748"
+  lightbulb:         "\U000F0335"
+  ceiling_light:     "\U000F0769"
+  lamp:              "\U000F06B5"
+  floor_lamp:        "\U000F08DD"
+  string_lights:     "\U000F12BA"
+  track_light:       "\U000F0914"
+  bulkhead_light:    "\U000F1A2F"
+  led_strip:         "\U000F07D6"
+  coach_lamp:        "\U000F1020"
+  ceiling_fan_light: "\U000F1798"
+  light_recessed:    "\U000F179B"
+
+  icon_font: light40
+  time_font: dseg_60
+  date_font: roboto48
+  text_font: roboto24
+  number_font: numbers64
+  screen_height: '480'
+  screen_width: '480'
+  button_on_color: "burnt_sienna"
+  button_off_color: "very_dark_gray"
+  icon_on_color: "yellow"
+  icon_off_color: "gray"
+  label_on_color: "white"
+  label_off_color: "gray"
+  button_text_color: "white"
+  time_color: "powderblue"
+  button_height_single: '109px'
+  button_height_double: '228px'
+  button_width: '150px'
+  touchscreen_idle_timeout: "120s"
+  touchscreen_daytime_brightness: "100%"
+  touchscreen_nighttime_brightness: "50%"
+  # Boot screen configuration
+  boot_screen_delay: 4s
+
+  # Screen goes to sleep
+  screen_sleep_hour: '3'
+  screen_sleep_minute: '0'
+
+  # Screen wakes up at 5:30am
+  screen_wake_hour: '4'
+  screen_wake_minute: '0'
+
+binary_sensor:
+  - platform: analog_threshold
+    name: "Cooker Overcurrent_1"
+    sensor_id: cooker_current
+    threshold: 30
+    filters:
+      - delayed_on: 10s
+    on_press:
+      - script.execute: beep
+    on_state:
+      - lvgl.label.update:
+          id: current_1_value
+          state:
+            checked: !lambda return x;
+
+sensor:
+  - platform: homeassistant
+    entity_id: sensor.athom_energy_monitor_02a338_current_5
+    id: cooker_current
+    on_value:
+      if:
+        condition:
+          lambda: "return isnan(x);"
+        then:
+          lvgl.label.update:
+            id: current_1_value
+            state:
+              checked: false
+            text: "--"
+        else:
+          - lvgl.label.update:
+              id: current_1_value
+              state:
+                checked: !lambda return x > 30;
+              text:
+                format: "%.0f"
+                args: [x]
+          - if:
+              condition:
+                lambda: return x > 2;
+              then:
+                script.execute: light_on
+
+  - platform: homeassistant
+    id: outside_temp
+    entity_id: sensor.st_00141258_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: out_temp_value
+            text:
+              format: "%.1f"
+              args: [x]
+
+  - platform: homeassistant
+    id: ambient_light_ratio
+    entity_id: sensor.st_00141258_illuminance
+    filters:
+      - lambda: return std::log10(x)/5.0;
+      - clamp:
+          min_value: 0.2
+          max_value: 1.0
+
+    on_value:
+      then:
+        - light.turn_on:
+            id: display_backlight
+            brightness: !lambda return x;
+script:
+  - id: light_on
+    mode: restart
+    then:
+      - homeassistant.service:
+          service: switch.turn_on
+          data:
+            entity_id: switch.stovetop_lights
+      - delay: 10min
+      - homeassistant.service:
+          service: switch.turn_off
+          data:
+            entity_id: switch.stovetop_lights
+
+  - id: beep
+    mode: restart
+    then:
+      - switch.turn_on: buzzer
+      - delay: 0.5s
+      - switch.turn_off: buzzer
+      - if:
+          condition:
+            lambda: return id(cooker_current).state > 35;
+          then:
+            delay: 0.5s
+          else:
+            delay: 15s
+      - if:
+          condition:
+            lambda: return id(cooker_current).state > 30;
+          then:
+            script.execute: beep
+
+# -------------------------------------------------------------------------
+# LVGL pages and buttons
+# -------------------------------------------------------------------------
+lvgl:
+  theme: !include { file: modules/lvgl/base/lvgl_theme.yaml }
+  page_wrap: true
+
+# Boot screen
+  top_layer: !include { file: modules/lvgl/screens/boot_screen.yaml }
+
+# Main Page
+  pages:
+    - id: main_page
+      layout:
+        type: flex
+        flex_flow: ROW_WRAP
+      width: 100%
+      bg_color: black
+      bg_opa: cover
+      pad_all: 5
+      widgets: # Include all the buttons
+        - button: !include {
+           file: modules/lvgl/buttons/basic_light_button.yaml,
+           vars: { id: 1, height: $button_height_double, name: "Cooker", icon: $light_recessed, entity: switch.stovetop_lights }
+         }
+        - button: !include {
+           file: modules/lvgl/buttons/basic_light_button.yaml,
+           vars: { id: 2, height: $button_height_double, name: "Kitchen 1", icon: $wall_sconce_round, entity: switch.kitchen_lights_1 }
+         }
+        - button: !include {
+           file: modules/lvgl/buttons/basic_light_button.yaml,
+           vars: { id: 3, height: $button_height_double, name: "Kitchen 2", icon: $wall_sconce_round, entity: switch.kitchen_lights_2 }
+         }
+        - obj: !include { file: modules/lvgl/power/current.yaml, vars: { id: 1, height: $button_height_double, name: "Cooker\nCurrent" } }
+        - obj: !include { file: modules/lvgl/datetime/time.yaml, vars: { id: 1, height: $button_height_double } }
+        - obj: !include { file: modules/lvgl/weather/weather.yaml, vars: { id: 1, height: $button_height_double } }

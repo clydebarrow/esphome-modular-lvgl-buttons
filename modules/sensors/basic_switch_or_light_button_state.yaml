@@ -2,32 +2,18 @@
 # Basic switch or light state - Define its settings in substitutions
 text_sensor:
   - platform: homeassistant
-    name: "$button_${id}_name"
-    entity_id: $button_${id}_device
+    id: button_${id}_sensor_id
+    entity_id: ${entity}
     on_value:
       then:
         - logger.log:
             format: "New state is %s"
             args: [x.c_str()]
         - lvgl.widget.update:
-            id: lv_button_${id}
+            id:
+              - lv_button_${id}
+              - lv_button_${id}_label
+              - lv_button_${id}_icon
             state:
-              checked: !lambda return (0 == x.compare(std::string{"on"}));
-              disabled: !lambda return ((0 == x.compare(std::string{"unavailable"})) or (0 == x.compare(std::string{"unknown"})));
-        - if:
-            condition:
-              lambda: return (0 == x.compare(std::string{"on"}));
-            then:
-              - lvgl.widget.update:
-                  id: lv_button_${id}_icon
-                  text_color: $icon_on_color
-              - lvgl.widget.update:
-                  id: lv_button_${id}_label
-                  text_color: $label_on_color
-            else:
-              - lvgl.widget.update:
-                  id: lv_button_${id}_icon
-                  text_color: $icon_off_color
-              - lvgl.widget.update:
-                  id: lv_button_${id}_label
-                  text_color: $label_off_color
+              checked: !lambda return x == "on";
+              disabled: !lambda return x == "unknown" || x == "unavailable";

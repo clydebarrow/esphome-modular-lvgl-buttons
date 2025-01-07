@@ -5,6 +5,12 @@ font:
     bpp: 8
     
   - file: "gfonts://Roboto"
+    id: numbers64
+    size: 64
+    bpp: 8
+    glyphs: "0123456789.:-"
+    
+  - file: "gfonts://Roboto"
     id: roboto32
     size: 32
     bpp: 8
@@ -41,6 +47,7 @@ font:
     bpp: 8
     glyphs: [
       "\U000F0335",  # mdi-lightbulb
+      "\U000F0748",  # mdi-wall-sconce-round
       "\U000F0769",  # mdi-ceiling-light
       "\U000F06B5",  # mdi-lamp
       "\U000F08DD",  # mdi-floor-lamp
@@ -60,6 +67,7 @@ font:
     bpp: 8
     glyphs: [
       "\U000F0335",  # mdi-lightbulb
+      "\U000F0748",  # mdi-wall-sconce-round
       "\U000F0769",  # mdi-ceiling-light
       "\U000F06B5",  # mdi-lamp
       "\U000F08DD",  # mdi-floor-lamp

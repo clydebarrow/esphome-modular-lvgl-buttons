@@ -15,8 +15,15 @@ display:
     update_interval: never
     auto_clear_enabled: false
     dimensions:
-      width: $sdl_width
-      height: $sdl_height
+      width: $screen_width
+      height: $screen_height
+
+switch:
+  - platform: template
+    id: buzzer
+    optimistic: true
+    on_turn_on:
+      logger.log: "Beep\U00000009"
 
 touchscreen:  
   platform: sdl
@@ -54,14 +61,3 @@ output:
       - lambda: |-
           ESP_LOGD("fake_light", "Fake brightness level: %.2f", state);         
 
-sensor:
-  - platform: homeassistant
-    id: outside_temp
-    entity_id: sensor.st_00141258_temperature
-    on_value:
-      then:
-        - lvgl.label.update:
-            id: out_temp_value
-            text:
-              format: "%.1f"
-              args: [x]

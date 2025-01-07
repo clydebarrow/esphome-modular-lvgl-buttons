@@ -1,0 +1,44 @@
+esphome:
+  name: cooker-screen
+  friendly_name: Cooker Screen
+  comment: "Waveshare ESP-Touch-LCD-4"
+  on_boot:
+    - light.turn_on:
+        id: display_backlight
+        brightness: 100%
+    
+packages:
+  # Hardware description file
+  hardware: !include modules/hardware/waveshare-esp32-s3-touch-lcd-4.yaml
+
+  # Generic configuration for ESP32 screens
+  base: !include modules/common/base.yaml
+  globals: !include modules/common/globals.yaml
+  wifi: !include modules/common/wifi.yaml
+  colors: !include modules/common/color.yaml
+  fonts: !include modules/common/fonts.yaml
+  images: !include modules/common/images.yaml
+  
+  
+  # Base settings for LVGL libary
+  lvgl_time: !include modules/lvgl/base/lvgl_time_homeassistant.yaml
+  lvgl_sensors: !include modules/lvgl/base/lvgl_sensors_base.yaml
+  lvgl_base: !include modules/lvgl/base/lvgl_base.yaml
+
+  # Time update script
+  lvgl_time_update: !include modules/lvgl/base/lvgl_time2_update.yaml
+  
+  # Update button and relay state from Home Assistant
+  button_1_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 1, entity: "switch.stovetop_lights" } }
+  button_2_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 2, entity: "switch.kitchen_lights_1" } }
+  button_3_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 3, entity: "switch.kitchen_lights_2" } }
+
+display:
+  rotation: 270
+
+touchscreen:
+  transform:
+    swap_xy: true
+    mirror_y: true
+
+<<: !include cooker-base.yaml

@@ -1,0 +1,40 @@
+            width: ${button_width}
+            height: $button_height_double
+            text_color: $button_text_color
+            text_align: center
+            bg_opa: transp
+            layout:
+              type: flex
+              flex_flow: column
+              flex_align_main: center
+              flex_align_track: center
+              flex_align_cross: center
+              pad_column: 2
+            widgets:
+              - label:
+                  align: center
+                  text_font: roboto22
+                  text: $name
+              - obj:
+                  bg_opa: transp
+                  layout:
+                    type: flex
+                    flex_flow: row
+                    flex_align_main: center
+                    flex_align_track: center
+                    flex_align_cross: start
+                    pad_column: 2
+                  widgets:
+                  - label:
+                      id: current_${id}_value
+                      text_font: $number_font
+                      text: "--"
+                      text_color: lightgreen
+                      checked:
+                        text_color: red
+                  - label:
+                      text_color: $button_text_color
+                      align: top_mid
+                      text_font: roboto22
+                      pad_top: 6
+                      text: "A"

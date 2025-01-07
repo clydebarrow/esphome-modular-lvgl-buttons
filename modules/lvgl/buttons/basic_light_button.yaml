@@ -8,13 +8,19 @@
                   text_font: $icon_font
                   align: top_left
                   id: lv_button_${id}_icon
-                  text: $button_${id}_icon
+                  text: ${icon}
+                  text_color: $icon_off_color
+                  checked:
+                    text_color: $icon_on_color
               - label:
-                  align: bottom_left
+                  align: bottom_mid
                   id: lv_button_${id}_label
-                  text: $button_${id}_name
+                  text: ${name}
+                  text_color: $label_off_color
+                  checked:
+                    text_color: $label_on_color
             on_click:
                 - homeassistant.service:
                     service: switch.toggle
                     data:
-                      entity_id: $button_${id}_device
+                      entity_id: ${entity}

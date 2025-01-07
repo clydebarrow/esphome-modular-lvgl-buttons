@@ -47,7 +47,7 @@ sensor:
     ambient_light:
       id: ambient_light
       name: "Ambient light"
-      unit_of_measurement: none
+      unit_of_measurement: ""
       filters:
         - multiply: .1
         - clamp:

@@ -7,10 +7,6 @@ esphome:
       - lvgl.widget.hide: boot_screen
 
 lvgl:
-  displays:
-    - my_display
-  touchscreens:
-    - my_touchscreen
   on_idle:     
     timeout: $touchscreen_idle_timeout
     then:
